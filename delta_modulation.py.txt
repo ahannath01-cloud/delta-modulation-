@@ -1,0 +1,46 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def delta_modulation(x, delta):
+    """
+    Performs Delta Modulation on an input signal.
+    :param x: Input signal (numpy array)
+    :param delta: Step size
+    :return: encoded_bits, reconstructed_signal
+    """
+    xq = 0  # Reconstructed signal initial value
+    encoded_bits = []
+    reconstructed_signal = []
+    
+    for sample in x:
+        if sample >= xq:
+            encoded_bits.append(1)
+            xq += delta
+        else:
+            encoded_bits.append(0)
+            xq -= delta
+        reconstructed_signal.append(xq)
+        
+    return np.array(encoded_bits), np.array(reconstructed_signal)
+
+# --- Parameters & Signal Generation ---
+f = 2           # Frequency of the input sine wave (Hz)
+fs = 100        # Sampling frequency (Hz)
+t = np.linspace(0, 1, fs)
+x = np.sin(2 * np.pi * f * t)  # Original analog signal (Sine wave)
+
+delta = 0.1     # Step size
+
+# --- Apply Delta Modulation ---
+bits, xq = delta_modulation(x, delta)
+
+# --- Plotting the Results ---
+plt.figure(figsize=(10, 6))
+plt.plot(t, x, label='Original Signal (Sine Wave)', color='blue', linewidth=2)
+plt.step(t, xq, label='Reconstructed Delta Modulated Signal', color='red', linestyle='--', where='mid', linewidth=2)
+plt.title('Delta Modulation and Demodulation')
+plt.xlabel('Time (s)')
+plt.ylabel('Amplitude')
+plt.legend()
+plt.grid(True)
+plt.show()
